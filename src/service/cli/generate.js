@@ -34,6 +34,8 @@ const OfferType = {
   SALE: `sale`,
 };
 
+const OfferTypeKeys = Object.keys(OfferType);
+
 const SumRestrict = {
   MIN: 1000,
   MAX: 100000,
@@ -51,11 +53,8 @@ const generateOffers = (count) =>
       title: TITLES[getRandomInt(0, TITLES.length - 1)],
       picture: getPictureFileName(PictureRestrict.MIN, PictureRestrict.MAX),
       description: shuffle(SENTENCES).slice(1, 5).join(` `),
-      type: OfferType[
-        Object.keys(OfferType)[
-          Math.floor(Math.random() * Object.keys(OfferType).length)
-        ]
-      ],
+      types:
+        OfferType[OfferTypeKeys[getRandomInt(0, OfferTypeKeys.length - 1)]],
       sum: getRandomInt(SumRestrict.MIN, SumRestrict.MAX),
       category: [CATEGORIES[getRandomInt(0, CATEGORIES.length - 1)]],
     }));
@@ -66,17 +65,17 @@ module.exports = {
     const [count] = args;
     if (count > 1000) {
       console.error(`Не больше 1000 объявлений`);
-      process.exit(ExitCode.error);
+      process.exit(ExitCode.ERROR);
     }
     const countOffer = Number.parseInt(count, 10) || DEFAULT_COUNT;
     const content = JSON.stringify(generateOffers(countOffer));
     fs.writeFile(FILE_NAME, content, (err) => {
       if (err) {
         console.error(`Can't write data to file...`);
-        process.exit(ExitCode.error);
+        process.exit(ExitCode.ERROR);
       }
       console.info(`Operation success. File created.`);
-      process.exit(ExitCode.success);
+      process.exit(ExitCode.SUCCESS);
     });
   },
 };
